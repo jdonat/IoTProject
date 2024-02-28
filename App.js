@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View, TouchableOpacity, Button, Image } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View , Modal } from 'react-native';
 import { useState, useEffect } from 'react'
 import Toast from 'react-native-root-toast'
 import CameraComponent from './components/CameraComponent'
@@ -7,7 +7,7 @@ import CameraComponent from './components/CameraComponent'
 export default function App() {
 
   const [description, setDescription] = useState('');
-
+  const [modalAddDescriptionVisible, setModalAddDescriptionVisible] = useState(false)
   const protocol = 'http://'
   const ip = '192.168.90.160'
     // 10.42.0.1 for localhost on Raspberry Hotspot
@@ -20,7 +20,10 @@ export default function App() {
 
 
 
-  
+  function changeModalAddDescriptionVisibility()
+  {
+      setModalAddDescriptionVisible(!modalAddDescriptionVisible);
+  }
 
   function CaesarCryptoEncode(text, shift) {
     let resultat = '';
@@ -136,6 +139,27 @@ export default function App() {
 
   return (
     <View style={styles.container}>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalAddDescriptionVisible}
+        onRequestClose={() => {
+          setModalAddDescriptionVisible(!modalAddDescriptionVisible);
+        }}>
+          <ScrollView contentContainerStyle={styles.modalView}>
+            <TextInput style={styles.input}
+               onChangeText={setDescription}
+               value={description}
+               placeholder='Ajouter une description'
+            ></TextInput>
+            <CameraComponent />
+            <Pressable
+              style={styles.button}
+              onPress={() => changeModalAddDescriptionVisibility()}>
+              <Text style={styles.textStyle}>Fermer</Text>
+            </Pressable>
+          </ScrollView>
+      </Modal>
       <ScrollView>
       <Text>Unlock Safe</Text>
       <Pressable
@@ -154,25 +178,21 @@ export default function App() {
         <Text style={styles.buttonText}>Admin</Text>
       </Pressable>
       <View>
-        <Text>Ajouter un objet</Text>
-        <TextInput style={styles.input}
-          onChangeText={setDescription}
-          value={description}
-          placeholder='Ajouter une description'
-        ></TextInput>
         <Pressable
         style={styles.button}
-        onPress={() => handleItemDescription('add', description, -1)}>
-        <Text style={styles.buttonText}>Submit</Text>
+        onPress={() => changeModalAddDescriptionVisibility()}>
+        <Text style={styles.buttonText}>Ajouter un objet</Text>
       </Pressable>
       </View>
-      <CameraComponent />
+
       <StatusBar style="auto" />
       </ScrollView>
     </View>
   )
   
 }
+
+
 
 const styles = StyleSheet.create({
   container: {
@@ -198,6 +218,14 @@ const styles = StyleSheet.create({
     height: 40,
     width: 220,
     borderWidth: 2,
-    paddingLeft: 10
+    paddingLeft: 10,
+    margin: 20
   },
+  modalView: {
+    backgroundColor: 'grey',
+    height: '100%',
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  }
 });
