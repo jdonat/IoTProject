@@ -6,7 +6,7 @@ import CameraComponent from './components/CameraComponent'
 
 export default function App() {
 
-  const [description, setDescription] = useState('');
+
   const [modalAddDescriptionVisible, setModalAddDescriptionVisible] = useState(false)
   const protocol = 'http://'
   const ip = '192.168.90.160'
@@ -16,8 +16,8 @@ export default function App() {
   const port = '8080'
   const url = protocol+ip+':'+port+'/'
 
-  const shiift = 15
-
+  const shiftCode = 15
+// shift = 7 pour changement code
 
 
   function changeModalAddDescriptionVisibility()
@@ -25,7 +25,7 @@ export default function App() {
       setModalAddDescriptionVisible(!modalAddDescriptionVisible);
   }
 
-  function CaesarCryptoEncode(text, shift) {
+  function CaesarCryptoEncode(text) {
     let resultat = '';
     if (text === '' || text === null || text.trim() === '') {
         resultat = '';
@@ -36,7 +36,7 @@ export default function App() {
         let NewAscii;
 
         if ((AsciiFor >= 65 && AsciiFor <= 90) || (AsciiFor >= 97 && AsciiFor <= 122)) {
-            NewAscii = AsciiFor + shift;
+            NewAscii = AsciiFor + shiftCode;
 
             if (AsciiFor >= 65 && AsciiFor <= 90) {
                 NewAscii = (NewAscii - 65) % 26 + 65;
@@ -51,7 +51,7 @@ export default function App() {
             }
         } else if (AsciiFor >= 48 && AsciiFor <= 58) {
             let base = 48;
-            NewAscii = (((AsciiFor + shift) - base + 10) % 10) + base;
+            NewAscii = (((AsciiFor + shiftCode) - base + 10) % 10) + base;
         } else {
             NewAscii = AsciiFor;
         }
@@ -61,7 +61,7 @@ export default function App() {
   }
 
   async function safeAction(route, code) {
-    let cryptCode = CaesarCryptoEncode(code, shiift)
+    let cryptCode = CaesarCryptoEncode(code)
     console.log('code : '+code+'  crypt : '+cryptCode)
          try {
             const response = await fetch(url+route, {
@@ -147,11 +147,6 @@ export default function App() {
           setModalAddDescriptionVisible(!modalAddDescriptionVisible);
         }}>
           <ScrollView contentContainerStyle={styles.modalView}>
-            <TextInput style={styles.input}
-               onChangeText={setDescription}
-               value={description}
-               placeholder='Ajouter une description'
-            ></TextInput>
             <CameraComponent />
             <Pressable
               style={styles.button}

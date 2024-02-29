@@ -1,15 +1,15 @@
-import { StyleSheet, Text, View, Button, Image} from 'react-native';
+import { StyleSheet, Text, View, Button, Image, TextInput, ScrollView }  from 'react-native';
 import { useState, useEffect } from 'react'
 import { Camera } from 'expo-camera'
 import Toast from 'react-native-root-toast'
         
 
 export default function CameraComponent() {
-   const [hasCameraPermission, setHasCameraPermission] = useState(null);
-   const [camera, setCamera] = useState(null);
-   const [image, setImage] = useState(null);
-   const [type, setType] = useState(Camera.Constants.Type.back);
-
+  const [hasCameraPermission, setHasCameraPermission] = useState(null);
+  const [camera, setCamera] = useState(null);
+  const [image, setImage] = useState(null);
+  const [type, setType] = useState(Camera.Constants.Type.back);
+  const [description, setDescription] = useState('');
 
   const protocol = 'http://'
   const ip = '192.168.90.160'
@@ -70,7 +70,7 @@ export default function CameraComponent() {
 
    return (
       
-   <View style={styles.container}>
+   <ScrollView contentContainerStyle={styles.container}>
       
       <View style={styles.cameraContainer}>
         <Camera 
@@ -80,7 +80,13 @@ export default function CameraComponent() {
             ratio={'1:1'} 
         />
       </View>
-      <Button
+      <View style={styles.buttonView}>
+        <TextInput style={styles.input}
+               onChangeText={setDescription}
+               value={description}
+               placeholder='Ajouter une description'
+        ></TextInput>
+        <Button
             title="Flip Image"
             onPress={() => {
               setType(
@@ -89,47 +95,45 @@ export default function CameraComponent() {
                   : Camera.Constants.Type.back
               );
             }}>
-      </Button>
-      <Button title="Take Picture" onPress={() => takePicture()} />
+        </Button>
+        <Button title="Take Picture" onPress={() => takePicture()} />
+      </View>
       <View style={styles.imageView}>
         <Image source={{uri: image}} style={styles.image}/>
       </View>
-   </View>
+   </ScrollView>
    )}
    
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+    marginLeft: -20
   },
-  button: {
-    backgroundColor: 'green',
-    alignItems: 'center',
-    justifyContent: 'center',
-    margin: 10,
-    height: 40,
-    width: 220
-  },
-  buttonText: {
-    color: 'black',
-    fontWeight: 'bold',
-    fontSize: 20,
-    
-  },
-
   cameraContainer: {
     height: 300,
-    width: 300
+    width: 300,
+    marginTop: 50
   },
   fixedRatio: {
-    height: 300,
-    width: 300,
-    marginTop: 100
+    height: '100%',
+    width: '100%',
+  },
+  buttonView: {
+    marginTop: 20,
+    marginLeft: 20
+
+  },
+  input: {
+    backgroundColor: 'white',
+    margin: 10,
+    padding: 10
+  },
+  imageView: {
+    paddingTop: 30,
   },
   image: {
-    height: 400,
-    width: 400
+    height: 300,
+    width: 300
   }
 });
