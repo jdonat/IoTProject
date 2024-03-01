@@ -1,8 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View , Modal } from 'react-native';
-import { useState, useEffect } from 'react'
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Toast from 'react-native-root-toast'
-import CameraComponent from './components/CameraComponent'
 
 export default function HomePage() {
 

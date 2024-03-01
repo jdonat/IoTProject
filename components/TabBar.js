@@ -3,9 +3,9 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
 
-import HomePage from './screens/HomePage'
-import Admin from './screens/Admin'
-import Coffre from './screens/Coffre'
+import HomePage from '../screens/HomePage'
+import Admin from '../screens/Admin'
+import Coffre from '../screens/Coffre'
 
 const Tab = createBottomTabNavigator();
 
@@ -28,12 +28,12 @@ export default function TabBar() {
             <MaterialCommunityIcons name="home" color={color} size={size} />
         ), 
       }}/>
-      <Tab.Screen name="Admin" component={Favorites} options={{ tabBarLabel: 'Admin', headerShown: false,
+      <Tab.Screen name="Admin" component={Admin} options={{ tabBarLabel: 'Admin', headerShown: false,
         tabBarIcon: ({ color, size }) => (
           <MaterialIcons name="admin-panel-settings" color={color} size={size} />
         ),
       }}/>
-      <Tab.Screen name="Coffre" component={Search} options={{ tabBarLabel: 'Coffre', headerShown: false,
+      <Tab.Screen name="Coffre" component={Coffre} options={{ tabBarLabel: 'Coffre', headerShown: false,
         tabBarIcon: ({ color, size }) => (
           <MaterialCommunityIcons name="safe-square" color={color} size={size} />
         ),

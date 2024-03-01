@@ -1,12 +1,12 @@
 import { StatusBar } from 'expo-status-bar';
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View , Modal } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View , Modal, FlatList } from 'react-native';
 import { useState, useEffect } from 'react'
 import Toast from 'react-native-root-toast'
-import CameraComponent from './components/CameraComponent'
+import CameraComponent from '../components/CameraComponent'
 
 export default function Coffre() {
 
-   const [coffreContent, setCoffreContent] = useState([])
+   const [coffreContent, setCoffreContent] = useState(null)
 
   const [modalAddDescriptionVisible, setModalAddDescriptionVisible] = useState(false)
   const protocol = 'http://'
@@ -105,15 +105,7 @@ export default function Coffre() {
 
    }
 
-   async function adminSection(route) {
-      try {
-            const response = await fetch(url+route)
-            let resp = await response.json()
-            Toast.show(`${route} : ${resp}`)
-         } catch (error) {
-            console.error(error)
-         }
-   }
+
 
    async function fetchContentData() {
       let arr = []
@@ -130,10 +122,9 @@ export default function Coffre() {
          } catch (error) {
             console.error(error)
          }
-      
-      setCoffreContent([...coffreContent, ...arr])
+      setCoffreContent(arr)
    }
-
+   fetchContentData()
    return (
     <View style={styles.container}>
       <Modal
@@ -165,7 +156,7 @@ export default function Coffre() {
                data={coffreContent}
                renderItem={({item}) => 
                <ContentItem 
-               contentDescription={item.description} contentImage={item.imageData} 
+               contentDescription={item.description} 
                contentId={item.id}
                />}
                keyExtractor={item => item.id}

@@ -2,13 +2,10 @@ import { StatusBar } from 'expo-status-bar';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View , Modal } from 'react-native';
 import { useState, useEffect } from 'react'
 import Toast from 'react-native-root-toast'
-import CameraComponent from './components/CameraComponent'
+
 
 export default function Admin() {
 
-
-
-  const [modalAddDescriptionVisible, setModalAddDescriptionVisible] = useState(false)
   const protocol = 'http://'
   const ip = '192.168.90.160'
     // 10.42.0.1 for localhost on Raspberry Hotspot
@@ -19,12 +16,6 @@ export default function Admin() {
 
   const shiftCode = 15
 // shift = 7 pour changement code
-
-
-  function changeModalAddDescriptionVisibility()
-  {
-      setModalAddDescriptionVisible(!modalAddDescriptionVisible);
-  }
 
   function CaesarCryptoEncode(text) {
     let resultat = '';
@@ -126,59 +117,14 @@ export default function Admin() {
 
    }
 
-   async function adminSection(route) {
-      try {
-            const response = await fetch(url+route)
-            let resp = await response.json()
-            Toast.show(`${route} : ${resp}`)
-         } catch (error) {
-            console.error(error)
-         }
-   }
 
 
    return (
     <View style={styles.container}>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalAddDescriptionVisible}
-        onRequestClose={() => {
-          setModalAddDescriptionVisible(!modalAddDescriptionVisible);
-        }}>
-          <ScrollView contentContainerStyle={styles.modalView}>
-            <CameraComponent />
-            <Pressable
-              style={styles.button}
-              onPress={() => changeModalAddDescriptionVisibility()}>
-              <Text style={styles.textStyle}>Fermer</Text>
-            </Pressable>
-          </ScrollView>
-      </Modal>
+
       <ScrollView>
-      <Text>Unlock Safe</Text>
-      <Pressable
-        style={styles.button}
-        onPress={() => safeAction('coffreopen', '1234')}>
-        <Text style={styles.buttonText}>Open with Right Code</Text>
-      </Pressable>
-      <Pressable
-        style={styles.button}
-        onPress={() => safeAction('coffreopen', '5678')}>
-        <Text style={styles.buttonText}>Open with False Code</Text>
-      </Pressable>
-      <Pressable
-        style={styles.button}
-        onPress={() => adminSection('admin')}>
-        <Text style={styles.buttonText}>Admin</Text>
-      </Pressable>
-      <View>
-        <Pressable
-        style={styles.button}
-        onPress={() => changeModalAddDescriptionVisibility()}>
-        <Text style={styles.buttonText}>Ajouter un objet</Text>
-      </Pressable>
-      </View>
+      <Text>Admin Section</Text>
+
 
       <StatusBar style="auto" />
       </ScrollView>
@@ -194,31 +140,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  button: {
-    backgroundColor: 'green',
-    alignItems: 'center',
-    justifyContent: 'center',
-    margin: 10,
-    height: 40,
-    width: 220
-  },
-  buttonText: {
-    color: 'black',
-    fontWeight: 'bold',
-    fontSize: 20
-  },
-  input: {
-    height: 40,
-    width: 220,
-    borderWidth: 2,
-    paddingLeft: 10,
-    margin: 20
-  },
-  modalView: {
-    backgroundColor: 'grey',
-    height: '100%',
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-  }
 });

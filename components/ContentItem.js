@@ -4,6 +4,7 @@ export default function ContentItem({ contentDescription, contentImage, contentI
 {
   const id = contentId
   const url = 'http://192.168.90.160:8080/image/'
+  console.log(url+id)
       return (
    <View style={styles.container}>
          <Image
@@ -17,7 +18,7 @@ export default function ContentItem({ contentDescription, contentImage, contentI
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'rgba(101,83,47,0.5)',
+    backgroundColor: 'rgb(101,83,47)',
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'column',
@@ -36,8 +37,8 @@ const styles = StyleSheet.create({
   textAlign: 'center'
  },
  image: {
-   height: 260,
-   width: 260,
+   height: 200,
+   width: 200,
    borderRadius: 5,
    padding: 20,
    margin: 20,
