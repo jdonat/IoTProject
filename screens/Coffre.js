@@ -1,16 +1,18 @@
 import { StatusBar } from 'expo-status-bar';
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View , Modal, FlatList } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View , Modal, FlatList, ActivityIndicator } from 'react-native';
 import { useState, useEffect } from 'react'
 import Toast from 'react-native-root-toast'
 import CameraComponent from '../components/CameraComponent'
+import ContentItem from '../components/ContentItem'
 
 export default function Coffre() {
 
-   const [coffreContent, setCoffreContent] = useState(null)
+   const [coffreContent, setCoffreContent] = useState([])
+      const [refreshing, setRefreshing] = useState(false)
 
   const [modalAddDescriptionVisible, setModalAddDescriptionVisible] = useState(false)
   const protocol = 'http://'
-  const ip = '192.168.90.160'
+  const ip = '10.42.0.1'
     // 10.42.0.1 for localhost on Raspberry Hotspot
   // 10.42.0.153 for testing with Java server on Ju's computer and with Raspberry Hotspot
   //192.168.90.160 on Ju's phone hotspot
@@ -19,7 +21,6 @@ export default function Coffre() {
 
   //const shiftCode = 15
 // shift = 7 pour changement code
-
 
   function changeModalAddDescriptionVisibility()
   {
@@ -102,30 +103,68 @@ export default function Coffre() {
       default :
       break
     }
-
    }
-
-
 
    async function fetchContentData() {
       let arr = []
       let route = 'contenus'
-         try {
+      console.log(url+route)
+        try{
+
             const response = await fetch(url+route)
-            //
+            console.log(response)
             const data = await response.json()
-            if(data.id != null)
+            if(data != null)
             {
-                  arr.push(data)
-               
+                  arr = data
             }
          } catch (error) {
             console.error(error)
          }
       setCoffreContent(arr)
    }
-   fetchContentData()
-   return (
+   async function fetchNewContentData(){
+    let arr = []
+      let route = 'contenus'
+      console.log(url+route)
+        try{
+
+            const response = await fetch(url+route)
+            console.log(response)
+            const data = await response.json()
+            if(data != null)
+            {
+                  arr = data
+            }
+         } catch (error) {
+            console.error(error)
+         }
+      setCoffreContent(arr)
+      setRefreshing(true)
+      console.log("COFFRE CONTENT CHANGE")
+   }
+
+  useEffect(() => {
+    fetchContentData()
+  },[])
+
+    useEffect(() => {
+      
+      
+  },[coffreContent])
+   if(coffreContent == null)
+   {
+      return (
+        <View style={styles.container}>
+              <View style={styles.centeredView}>
+                  <ActivityIndicator size="large" color="black" />
+              </View>
+            
+        </View>
+        )
+   }
+   else{
+         return (
     <View style={styles.container}>
       <Modal
         animationType="slide"
@@ -138,13 +177,14 @@ export default function Coffre() {
             <CameraComponent />
             <Pressable
               style={styles.button}
-              onPress={() => changeModalAddDescriptionVisibility()}>
+              onPress={() => {
+                changeModalAddDescriptionVisibility()
+                fetchContentData()
+              }}>
               <Text style={styles.textStyle}>Fermer</Text>
             </Pressable>
           </ScrollView>
       </Modal>
-
-      
       <View>
          <Text>Contenu du Coffre</Text>
          <Pressable
@@ -156,10 +196,12 @@ export default function Coffre() {
                data={coffreContent}
                renderItem={({item}) => 
                <ContentItem 
-               contentDescription={item.description} 
-               contentId={item.id}
+                contentId={item.id}
+                contentDescription={item.description}
+                onDelete={fetchNewContentData}
                />}
-               keyExtractor={item => item.id}
+               keyExtractor={(item) => {return item.id }}
+               extraData={refreshing}
             />
       </View>
 
@@ -167,6 +209,8 @@ export default function Coffre() {
 
     </View>
   )
+   }
+
 
 }
 
@@ -177,6 +221,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+   centeredView: {
+   alignItems: 'center',
+   justifyContent: 'center',
+ },
   button: {
     backgroundColor: 'green',
     alignItems: 'center',

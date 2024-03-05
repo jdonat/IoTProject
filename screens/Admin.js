@@ -2,22 +2,60 @@ import { StatusBar } from 'expo-status-bar';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View , Modal } from 'react-native';
 import { useState, useEffect } from 'react'
 import Toast from 'react-native-root-toast'
+import base64 from 'react-native-base64'
 
 
 export default function Admin() {
 
+  const [oldCode, setOldCode] = useState("")
+  const [newCode, setNewCode] = useState("")
+  const [newCode2, setNewCode2] = useState("")
+  const [errorMessage, setErrorMessage] = useState("")
+
   const protocol = 'http://'
-  const ip = '192.168.90.160'
+  const ip = '10.42.0.1'
     // 10.42.0.1 for localhost on Raspberry Hotspot
   // 10.42.0.153 for testing with Java server on Ju's computer and with Raspberry Hotspot
   //192.168.90.160 on Ju's phone hotspot
   const port = '8080'
   const url = protocol+ip+':'+port+'/'
 
-  const shiftCode = 15
+  //const shiftCode = 15
 // shift = 7 pour changement code
 
-  function CaesarCryptoEncode(text) {
+  async function checkCodeAndSubmitChange() {
+    const route = 'admin/coffre'
+      if(newCode != newCode2)
+      {
+        setErrorMessage("Le nouveau code ne correspondent pas")
+        return 0
+      }
+      else {
+        try {
+          let formData = new FormData()
+          let oCd = CaesarCryptoEncode(oldCode, 7)
+          let nCd = CaesarCryptoEncode(newCode, 7)
+          formData.append('oldCode', oCd)
+          formData.append('newCode', nCd)
+
+            const response = await fetch(url+route, {
+              method: 'PUT',
+              headers: { 
+                'Authorization': 'Basic '+ base64.encode('admin:admin'),
+                'Content-type': 'multipart/form-data' },
+              body: formData,
+            })
+            
+            let resp = await response.text()
+            Toast.show(`change Code to ${route} : ${resp}`)
+            console.log("Response :",resp)
+         } catch (error) {
+            console.error(error)
+         }
+      }
+  }
+
+  function CaesarCryptoEncode(text, shiftCode) {
     let resultat = '';
     if (text === '' || text === null || text.trim() === '') {
         resultat = '';
@@ -122,12 +160,29 @@ export default function Admin() {
    return (
     <View style={styles.container}>
 
-      <ScrollView>
-      <Text>Admin Section</Text>
 
-
+      <Text style={styles.title}>Admin Section</Text>
+      <TextInput style={styles.input}
+               onChangeText={setOldCode}
+               value={oldCode}
+               placeholder="Entrez l'ancien code"
+      ></TextInput>
+      <TextInput style={styles.input}
+               onChangeText={setNewCode}
+               value={newCode}
+               placeholder='Entrez le nouveau code'
+      ></TextInput>
+      <TextInput style={styles.input}
+               onChangeText={setNewCode2}
+               value={newCode2}
+               placeholder='Confirmez le nouveau code'
+      ></TextInput>
+      <Pressable
+            style={styles.button}
+            onPress={() => checkCodeAndSubmitChange()}>
+        <Text style={styles.buttonText}>Envoyer</Text>
+      </Pressable>
       <StatusBar style="auto" />
-      </ScrollView>
     </View>
   )
 
@@ -138,6 +193,32 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'center',
+
   },
+  title: {
+    fontWeight: 'bold',
+    marginTop: 40,
+    marginBottom: 100,
+    fontSize: 20
+  },
+  input: {
+    padding: 10,
+    borderWidth: 2,
+    margin: 15,
+    width: 200
+  },
+  button: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 30
+  },
+  buttonText: {
+    backgroundColor: 'green',
+    height: 40,
+    width: 100,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    textAlignVertical: 'center',
+
+  }
 });

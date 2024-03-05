@@ -41,7 +41,7 @@ class MyHandler(BaseHTTPRequestHandler):
             open()
         if self.path == '/close/led':
             close()
-        self.send_response(200, message="OK")
+        self.send_response(200, "OK")
         self.send_header('Content-Type', 'text/plain')
         self.end_headers()
 

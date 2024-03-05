@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Button, Image, TextInput, ScrollView }  from 'react-native';
+import { StyleSheet, Text, View, Button, TextInput, ScrollView, Image }  from 'react-native';
 import { useState, useEffect } from 'react'
 import { Camera } from 'expo-camera'
 import Toast from 'react-native-root-toast'
@@ -12,7 +12,7 @@ export default function CameraComponent() {
   const [description, setDescription] = useState('');
 
   const protocol = 'http://'
-  const ip = '192.168.90.160'
+  const ip = '10.42.0.1'
     // 10.42.0.1 for localhost on Raspberry Hotspot
   // 10.42.0.153 for testing with Java server on Ju's computer and with Raspberry Hotspot
   //192.168.90.160 on Ju's phone hotspot
@@ -57,8 +57,14 @@ export default function CameraComponent() {
     if(camera){
       try{
         const data = await camera.takePictureAsync({"quality": 0})
+        const result = await Image.compress(data.uri, {
+          compressionMethod: 'manual',
+          maxWidth: 300,
+          quality: 0.8,
+        })
+        console.log(result)
         setImage(data.uri)
-        //uploadImage(data)
+        uploadImage(data)
       }catch(e){
         console.log(e)
       }

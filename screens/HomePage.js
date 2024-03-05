@@ -5,7 +5,7 @@ import Toast from 'react-native-root-toast'
 export default function HomePage() {
 
   const protocol = 'http://'
-  const ip = '192.168.90.160'
+  const ip = '10.42.0.1'
     // 10.42.0.1 for localhost on Raspberry Hotspot
   // 10.42.0.153 for testing with Java server on Ju's computer and with Raspberry Hotspot
   //192.168.90.160 on Ju's phone hotspot
@@ -60,8 +60,7 @@ export default function HomePage() {
                 Accept: 'text/plain',
                 'Content-Type': 'text/plain',
               },
-              body: `${cryptCode}`
-              ,
+              body: `${cryptCode}`,
             })
             
             let resp = await response.text()
@@ -79,6 +78,11 @@ export default function HomePage() {
         style={styles.button}
         onPress={() => safeAction('coffreopen', '1234')}>
         <Text style={styles.buttonText}>Open with Right Code</Text>
+      </Pressable>
+      <Pressable
+        style={styles.button}
+        onPress={() => safeAction('coffreclose', '1234')}>
+        <Text style={styles.buttonText}>Close with Right Code</Text>
       </Pressable>
       <Pressable
         style={styles.button}
