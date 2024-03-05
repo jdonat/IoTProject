@@ -18,7 +18,6 @@ export default function CameraComponent() {
   //192.168.90.160 on Ju's phone hotspot
   const port = '8080'
   const url = protocol+ip+':'+port+'/'
-         
 
    useEffect(() => {
       (async () => {
@@ -27,13 +26,8 @@ export default function CameraComponent() {
       })();
   }, []);
 
-
-
-
    async function uploadImage(data){
       let route = 'contenuimage'
-      console.log("upload file uri :",data.uri)
-
       let formData = new FormData()
       formData.append('imagedata', {
          name: data.uri.substr(-38),
@@ -47,8 +41,7 @@ export default function CameraComponent() {
             headers: { 'Content-type': 'multipart/form-data' },
             body: formData,
           })
-          console.log("Response :",resp)
-            Toast.show(`${route} : ${resp}`)
+          //type, status, ok, statusText, headers, url, bodyUsed, _bodyInit, _bodyBlob
          } catch (error) {
             console.error(error)
          }
@@ -56,13 +49,7 @@ export default function CameraComponent() {
     const takePicture = async () => {
     if(camera){
       try{
-        const data = await camera.takePictureAsync({"quality": 0})
-        const result = await Image.compress(data.uri, {
-          compressionMethod: 'manual',
-          maxWidth: 300,
-          quality: 0.8,
-        })
-        console.log(result)
+        const data = await camera.takePictureAsync()
         setImage(data.uri)
         uploadImage(data)
       }catch(e){
@@ -71,11 +58,10 @@ export default function CameraComponent() {
     }
   }
   if (hasCameraPermission === false) {
-    return <Text>No access to camera</Text>;
+    return <Text style={styles.error}>No access to camera</Text>;
   }
 
    return (
-      
    <ScrollView contentContainerStyle={styles.container}>
       
       <View style={styles.cameraContainer}>
@@ -91,6 +77,7 @@ export default function CameraComponent() {
                onChangeText={setDescription}
                value={description}
                placeholder='Ajouter une description'
+               maxLength={30}
         ></TextInput>
         <Button
             title="Flip Image"
@@ -140,5 +127,9 @@ const styles = StyleSheet.create({
   image: {
     height: 300,
     width: 300
+  },
+  error: {
+    color: 'red',
+    fontSize: 20
   }
 });

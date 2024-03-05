@@ -1,15 +1,14 @@
 import { StatusBar } from 'expo-status-bar';
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View , Modal, FlatList, ActivityIndicator } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View , Modal, FlatList, ActivityIndicator, Image } from 'react-native';
 import { useState, useEffect } from 'react'
 import Toast from 'react-native-root-toast'
+import Entypo from 'react-native-vector-icons/Entypo'
 import CameraComponent from '../components/CameraComponent'
-import ContentItem from '../components/ContentItem'
+
 
 export default function Coffre() {
 
    const [coffreContent, setCoffreContent] = useState([])
-      const [refreshing, setRefreshing] = useState(false)
-
   const [modalAddDescriptionVisible, setModalAddDescriptionVisible] = useState(false)
   const protocol = 'http://'
   const ip = '10.42.0.1'
@@ -19,100 +18,37 @@ export default function Coffre() {
   const port = '8080'
   const url = protocol+ip+':'+port+'/'
 
-  //const shiftCode = 15
-// shift = 7 pour changement code
+  const imageRoute = 'image/'
+  const path = url+imageRoute
 
-  function changeModalAddDescriptionVisibility()
-  {
-      setModalAddDescriptionVisible(!modalAddDescriptionVisible);
-  }
-
-  function CaesarCryptoEncode(text) {
-    let resultat = '';
-    if (text === '' || text === null || text.trim() === '') {
-        resultat = '';
-        return resultat;
-    }
-    for (let i = 0; i < text.length; i++) {
-        let AsciiFor = text.charCodeAt(i);
-        let NewAscii;
-
-        if ((AsciiFor >= 65 && AsciiFor <= 90) || (AsciiFor >= 97 && AsciiFor <= 122)) {
-            NewAscii = AsciiFor + shiftCode;
-
-            if (AsciiFor >= 65 && AsciiFor <= 90) {
-                NewAscii = (NewAscii - 65) % 26 + 65;
-                if (NewAscii < 65) {
-                    NewAscii += 26;
-                }
-            } else if (AsciiFor >= 97 && AsciiFor <= 122) {
-                NewAscii = (NewAscii - 97) % 26 + 97;
-                if (NewAscii < 97) {
-                    NewAscii += 26;
-                }
-            }
-        } else if (AsciiFor >= 48 && AsciiFor <= 58) {
-            let base = 48;
-            NewAscii = (((AsciiFor + shiftCode) - base + 10) % 10) + base;
-        } else {
-            NewAscii = AsciiFor;
-        }
-        resultat += String.fromCharCode(NewAscii);
-    }
-    return resultat;
-  }
-
-   async function handleItemDescription(action, desc, id) {
-    let route = 'contenu'
-    let jsone = `{"description": "${desc}"}`
-    const urlEncodedData = new URLSearchParams(desc).toString()
-    //console.log(JSON.stringify(jsone))
-    console.log("JSON : ", jsone)
-    //let jsone = {}
-    //'Authorization': `None ${base64String}`,
-    //let jso = JSON.stringify(jsone)
-    //console.log(jso)
-    switch(action) {
-      case 'add':
-        try {
-            const response = await fetch(url+route, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: `${jsone}`
-              ,
+  async function deleteContent(id) {
+    const road = 'contenu/delete/'
+      try {
+            const response = await fetch(url+road+id, {
+              method: 'DELETE'
             })
             let resp = await response.text()
-            Toast.show(`add Item to ${route} : ${resp}`)
+            Toast.show(`Remove Item : ${resp}`)
             console.log("Response :",resp)
          } catch (error) {
             console.error(error)
          }
-      break
-      case 'delete':
-        try {
-            const response = await fetch(url+route+"/"+id)
-            let resp = await response.text()
-            Toast.show(`delete Item to ${route} at id = ${id}: ${resp}`)
-            console.log(resp)
-         } catch (error) {
-            console.error(error)
-         }
-      break
-      default :
-      break
-    }
-   }
+         fetchContentData()
+  }
 
+
+  //const shiftCode = 15
+// shift = 7 pour changement code
+  function changeModalAddDescriptionVisibility()
+  {
+      setModalAddDescriptionVisible(!modalAddDescriptionVisible);
+  }
    async function fetchContentData() {
       let arr = []
       let route = 'contenus'
-      console.log(url+route)
         try{
 
             const response = await fetch(url+route)
-            console.log(response)
             const data = await response.json()
             if(data != null)
             {
@@ -122,36 +58,12 @@ export default function Coffre() {
             console.error(error)
          }
       setCoffreContent(arr)
-   }
-   async function fetchNewContentData(){
-    let arr = []
-      let route = 'contenus'
-      console.log(url+route)
-        try{
-
-            const response = await fetch(url+route)
-            console.log(response)
-            const data = await response.json()
-            if(data != null)
-            {
-                  arr = data
-            }
-         } catch (error) {
-            console.error(error)
-         }
-      setCoffreContent(arr)
-      setRefreshing(true)
-      console.log("COFFRE CONTENT CHANGE")
    }
 
   useEffect(() => {
     fetchContentData()
   },[])
 
-    useEffect(() => {
-      
-      
-  },[coffreContent])
    if(coffreContent == null)
    {
       return (
@@ -195,13 +107,16 @@ export default function Coffre() {
          <FlatList
                data={coffreContent}
                renderItem={({item}) => 
-               <ContentItem 
-                contentId={item.id}
-                contentDescription={item.description}
-                onDelete={fetchNewContentData}
-               />}
+              <View style={styles.imageContainer}>
+                <Image source={{ uri: path+item.id }} style={styles.image} />
+                <Text style={styles.description}>{item.description}</Text>
+                <Pressable
+                  onPress={() => deleteContent(item.id)}>
+                  <Entypo name="cross" color='red' size={40} />
+                </Pressable>
+              </View>
+              }   
                keyExtractor={(item) => {return item.id }}
-               extraData={refreshing}
             />
       </View>
 
@@ -251,5 +166,32 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-  }
+  },
+  imageContainer: {
+    flex: 1,
+    backgroundColor: 'black',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'column',
+    marginVertical: 8,
+    marginHorizontal: 16,
+    borderRadius: 20,
+    height: 360,
+    width: 320,
+    padding: 30
+  },
+  description: {
+  fontSize: 26,
+  color: 'white',
+  paddingBottom: 10,
+  fontWeight: 'bold',
+  textAlign: 'center'
+ },
+ image: {
+   height: 200,
+   width: 200,
+   borderRadius: 5,
+   padding: 20,
+   margin: 20,
+ }
 });
