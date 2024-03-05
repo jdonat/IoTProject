@@ -52,19 +52,15 @@ export default function HomePage() {
 
   async function safeAction(route, code) {
     let cryptCode = CaesarCryptoEncode(code)
-    console.log('code : '+code+'  crypt : '+cryptCode)
+    let formData = new FormData()
+    formData.append('code', cryptCode)
          try {
-            const response = await fetch(url+route, {
-              method: 'POST',
-              headers: {
-                Accept: 'text/plain',
-                'Content-Type': 'text/plain',
-              },
-              body: `${cryptCode}`,
-            })
-            
-            let resp = await response.text()
-            Toast.show(`${route} : ${resp}`)
+            const resp = await fetch(url+route, {
+            method: 'POST',
+            headers: { 'Content-type': 'multipart/form-data' },
+            body: formData,
+          })
+            Toast.show(`${resp}`)
          } catch (error) {
             console.error(error)
          }
