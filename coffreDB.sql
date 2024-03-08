@@ -19,6 +19,8 @@ CREATE TABLE coffre
         UNIQUE (id)
 );
 
+INSERT INTO coffre (id, closed, code)  VALUES  (1, 1 , '0000');
+
 CREATE TABLE contenu
 (
     id          int AUTO_INCREMENT
